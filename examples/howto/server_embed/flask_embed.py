@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 import pandas as pd
+import requests
 import yaml
 
 from tornado.ioloop import IOLoop
@@ -17,6 +18,8 @@ flask_app = Flask(__name__)
 
 def modify_doc(doc):
     data_url = "http://www.neracoos.org/erddap/tabledap/B01_sbe37_all.csvp?time,temperature&depth=1&temperature_qc=0&time>=2016-02-15&time<=2017-03-22"
+    b, i, q = data_url.partition('?')
+    data_url = b+i+requests.utils.quote(q)
     df = pd.read_csv(data_url, parse_dates=True, index_col=0)
     df = df.rename(columns={'temperature (celsius)': 'temperature'})
     df.index.name = 'time'
